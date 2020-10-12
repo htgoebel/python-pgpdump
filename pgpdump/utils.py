@@ -74,16 +74,18 @@ def crc24(data):
 def get_int2(data, offset):
     '''Pull two bytes from data at offset and return as an integer.'''
     if offset+2 > len(data):
-        raise PgpdumpException("Wants a 2-byte integer at position %d of packet of size %d"%(
-            offset, len(data)))
+        raise PgpdumpException(
+            "Wants an 2-byte integer at position %d of packet of size %d"
+            % (offset, len(data)))
     return (data[offset] << 8) + data[offset + 1]
 
 
 def get_int4(data, offset):
     '''Pull four bytes from data at offset and return as an integer.'''
     if offset+4 > len(data):
-        raise PgpdumpException("Wants a 4-byte integer at position %d of packet of size %d"%(
-            offset, len(data)))
+        raise PgpdumpException(
+            "Wants an 4-byte integer at position %d of packet of size %d"
+            % (offset, len(data)))
     return ((data[offset] << 24) + (data[offset + 1] << 16) +
             (data[offset + 2] << 8) + data[offset + 3])
 
@@ -91,8 +93,9 @@ def get_int4(data, offset):
 def get_int8(data, offset):
     '''Pull eight bytes from data at offset and return as an integer.'''
     if offset+8 > len(data):
-        raise PgpdumpException("Wants an 8-byte integer at position %d of packet of size %d"%(
-            offset, len(data)))
+        raise PgpdumpException(
+            "Wants an 8-byte integer at position %d of packet of size %d"
+            % (offset, len(data)))
     return (get_int4(data, offset) << 32) + get_int4(data, offset + 4)
 
 
@@ -148,7 +151,9 @@ def get_mpi(data, offset):
     offset += 2
     to_process = (mpi_len + 7) // 8
     if to_process > (len(data) - offset):
-        raise PgpdumpException("MPI wants %s octets, but buffer has only %s left"%(to_process, len(data) - offset))
+        raise PgpdumpException(
+            "MPI wants %s octets, but buffer has only %s left"
+            % (to_process, len(data) - offset))
     mpi = 0
     i = -4
     for i in range(0, to_process - 3, 4):

@@ -947,8 +947,10 @@ class UserAttributePacket(Packet):
             # sub_len includes the subtype single byte, knock that off
             sub_len -= 1
             if offset + sub_offset >= len(self.data):
-                raise PgpdumpException("Attribute at position %d wants another %d octets, but only %d octets remain"%(
-                    offset, sub_offset, len(self.data) - offset))
+                raise PgpdumpException(
+                    "Attribute at position %d wants another %d octets, "
+                    "but only %d octets remain"
+                    % (offset, sub_offset, len(self.data) - offset))
             # initial length bytes
             offset += sub_offset
 
