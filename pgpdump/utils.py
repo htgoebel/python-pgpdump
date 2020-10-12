@@ -138,8 +138,7 @@ def encode_packet(tag, new, data, armored=False):
 '''.format(block={2: 'SIGNATURE', 6: 'KEY BLOCK'}.get(tag, 'MESSAGE'),
            body='\n'.join([strdata[i:i+64] for i in range(0, len(strdata), 64)]),
            crc=codecs.decode(b64encode(crc24(frame).to_bytes(3, 'big')), 'ascii'))
-        
-            
+
 
 def get_mpi(data, offset):
     '''Gets a multi-precision integer as per RFC-4880.

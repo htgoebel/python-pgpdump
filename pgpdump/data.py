@@ -9,7 +9,7 @@ class BinaryData(object):
     binary data as input; such as that read from a .sig or .gpg file.'''
     binary_tag_flag = 0x80
 
-    def __init__(self, data):
+    def __init__(self, data, secret_keys=False, passphrase=None):
         if not data:
             raise PgpdumpException("no data to parse")
         if len(data) <= 1:
@@ -22,13 +22,16 @@ class BinaryData(object):
             raise PgpdumpException("incorrect binary data")
         self.data = data
         self.length = len(data)
+        self.secret_keys = secret_keys
+        self.passphrase = passphrase
 
     def packets(self, skip=False):
         '''A generator function returning PGP data packets.
         if skip=True, failing packets will log an error instead of raising an exception.'''
         offset = 0
         while offset < self.length:
-            total_length, packet = construct_packet(self.data, offset, skip)
+            total_length, packet = construct_packet(self.data, offset,
+                self.secret_keys, self.passphrase, skip)
             offset += total_length
             if packet is not None:
                 yield packet
@@ -41,8 +44,10 @@ class BinaryData(object):
 class AsciiData(BinaryData):
     '''A wrapper class that supports ASCII-armored input. It searches for the
     first PGP magic header and extracts the data contained within.'''
-    def __init__(self, data):
+    def __init__(self, data, secret_keys=False, passphrase=None):
         self.original_data = data
+        if not isinstance(data, bytes):
+            data = data.encode()
         data = self.strip_magic(data)
         data, known_crc = self.split_data_crc(data)
         data = bytearray(b64decode(data))
@@ -53,7 +58,7 @@ class AsciiData(BinaryData):
                 raise PgpdumpException(
                         "CRC failure: known 0x%x, actual 0x%x" % (
                             known_crc, actual_crc))
-        super(AsciiData, self).__init__(data)
+        super(AsciiData, self).__init__(data, secret_keys, passphrase)
 
     @staticmethod
     def strip_magic(data):
